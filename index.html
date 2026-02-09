@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ENGI‑MART | Engineering Equipment Store</title>
+  <link rel="stylesheet" href="E.G.css" />
+</head>
+<body>
+
+<header>
+  <h1>ENGI‑MART</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="services.html">Services</a>
+    <a href="contacts.html">Contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h2>Engineering Equipment & Industrial Packages</h2>
+  <p>Generators • Solar Systems • Construction • Power Solutions</p>
+</section>
+
+<section class="container" id="products">
+  <h2>Equipment Packages</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>500kVA Diesel Generator Package</h3>
+      <p>Perkins engine, soundproof canopy, installation included.</p>
+      <p class="price">₦45,000,000</p>
+      <button onclick="addToCart('500kVA Generator',45000000)">Add to Cart</button>
+    </div>
+    <div class="card">
+      <h3>50kW Solar Power System</h3>
+      <p>Panels, inverter, batteries & installation.</p>
+      <p class="price">₦18,500,000</p>
+      <button onclick="addToCart('50kW Solar System',18500000)">Add to Cart</button>
+    </div>
+    <div class="card">
+      <h3>Construction Equipment Bundle</h3>
+      <p>Concrete mixer, vibrator, cutter & tools.</p>
+      <p class="price">₦9,200,000</p>
+      <button onclick="addToCart('Construction Bundle',9200000)">Add to Cart</button>
+    </div>
+    <div class="card">
+      <h3>Industrial Water Pump System</h3>
+      <p>High‑capacity pumps with control panel.</p>
+      <p class="price">₦6,800,000</p>
+      <button onclick="addToCart('Water Pump System',6800000)">Add to Cart</button>
+    </div>
+  </div>
+</section>
+
+<section class="container" id="services">
+  <h2>Engineering Services</h2>
+  <ul>
+    <li>Installation & Commissioning</li>
+    <li>Preventive Maintenance</li>
+    <li>Power Audits</li>
+    <li>Technical Support & Training</li>
+  </ul>
+</section>
+
+<footer id="contact">
+  <p>© 2026 ENGI‑MART • Engineering Solutions Marketplace</p>
+</footer>
+
+<div id="cart">
+  <h3>Cart</h3>
+  <div id="cartItems"></div>
+  <p><strong>Total:</strong> ₦<span id="total">0</span></p>
+  <button onclick="checkout()">Checkout</button>
+</div>
+
+<script src="E.G.js"></script>
+
+</body>
+</html>

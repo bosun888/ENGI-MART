@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "10kVA Diesel Generator",
+    "category": "Generators",
+    "description": "Compact diesel generator for small offices and homes.",
+    "price": 3500000,
+    "img": ""
+  },
+  {
+    "id": 2,
+    "name": "20kVA Diesel Generator",
+    "category": "Generators",
+    "description": "Reliable backup power generator for SMEs.",
+    "price": 5200000,
+    "img": ""
+  }
+]

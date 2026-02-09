@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome | ENGI-MART</title>
+  <link rel="stylesheet" href="E.G.css"/>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f5f5f5;
+    }
+    .welcome-card {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .welcome-card h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .welcome-card p {
+      margin-bottom: 30px;
+      font-size: 18px;
+      color: #555;
+    }
+    .welcome-card a {
+      text-decoration: none;
+      padding: 10px 20px;
+      background: #0070f3;
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="welcome-card">
+    <h1 id="greeting">Welcome!</h1>
+    <p>You are successfully logged in. Redirecting to the home page...</p>
+    <a href="index.html">Go to Home Now</a>
+  </div>
+
+  <script>
+    // Get the logged-in user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+    // If no user found, redirect to login page
+    if (!currentUser) {
+      window.location.href = "login.html";
+    } else {
+      // Personalize greeting
+      const greetingEl = document.getElementById("greeting");
+      greetingEl.textContent = `Welcome, ${currentUser.name}!`;
+    }
+
+    // Auto-redirect to home page after 3 seconds
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 3000);
+  </script>
+
+</body>
+</html>

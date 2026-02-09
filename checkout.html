@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ENGI-MART | Checkout</title>
+  <link rel="stylesheet" href="E.G.css"/>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f8; }
+    .container { max-width: 800px; margin: 50px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { padding: 10px; text-align: center; border-bottom: 1px solid #ddd; }
+    th { background: #0077cc; color: #fff; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    #totalRow td { font-weight: bold; font-size: 1.1em; }
+    input[type="email"] { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ccc; }
+    button { background: #28a745; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 1em; }
+    button:hover { background: #218838; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Checkout</h2>
+
+  <label for="email">Email Address</label>
+  <input type="email" id="email" placeholder="Enter your email" required />
+
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price (₦)</th>
+        <th>Quantity</th>
+        <th>Subtotal (₦)</th>
+      </tr>
+    </thead>
+    <tbody id="checkoutItems"></tbody>
+    <tfoot>
+      <tr id="totalRow">
+        <td colspan="3">Total</td>
+        <td id="totalAmount">0</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <button id="payBtn">Pay with Card</button>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const STRIPE_PUBLISHABLE_KEY = "YOUR_STRIPE_PUBLISHABLE_KEY"; // replace with your key
+  const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+
+  let cart = [];
+
+  // Load cart from backend
+  async function loadCart() {
+    try {
+      const res = await fetch("http://localhost:5000/cart");
+      cart = await res.json();
+      displayCart();
+    } catch (err) {
+      console.error("Error loading cart:", err);
+      alert("Failed to load cart.");
+    }
+  }
+
+  function displayCart() {
+    const tbody = document.getElementById("checkoutItems");
+    const totalEl = document.getElementById("totalAmount");
+    tbody.innerHTML = "";
+
+    if(cart.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4">Your cart is empty</td></tr>`;
+      totalEl.textContent = "0";
+      return;
+    }
+
+    let total = 0;
+    cart.forEach(item => {
+      const quantity = item.quantity || 1;
+      const subtotal = item.price * quantity;
+      total += subtotal;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.name}</td>
+        <td>${item.price.toLocaleString()}</td>
+        <td>${quantity}</td>
+        <td>${subtotal.toLocaleString()}</td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    totalEl.textContent = total.toLocaleString();
+  }
+
+  // Checkout button
+  document.getElementById("payBtn").addEventListener("click", async () => {
+    const email = document.getElementById("email").value;
+    if(!email) return alert("Please enter your email");
+
+    if(cart.length === 0) return alert("Your cart is empty!");
+
+    try {
+      const res = await fetch("http://localhost:5000/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart, customerEmail: email })
+      });
+      const data = await res.json();
+      await stripe.redirectToCheckout({ sessionId: data.id });
+    } catch(err) {
+      console.error("Error creating checkout session:", err);
+      alert("Failed to initiate payment");
+    }
+  });
+
+  loadCart();
+</script>
+
+</body>
+</html>

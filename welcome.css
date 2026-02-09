@@ -1,0 +1,161 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #f4f4f4;
+  color: #1a1a1a;
+}
+
+header {
+  background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3Sr-Drrjdrj5TqYikjzhaVTEVigoo06KT7yZGovq3GA&s);
+  background-size: cover;
+  background-position: center;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  padding: 60px 20px;
+  position: relative;
+}
+
+header h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+  color: blue;
+}
+
+header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  font-weight: normal;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    color: blue;
+}
+
+header p {
+  font-style: italic;
+  margin-bottom: 20px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    color: black;
+    font-weight: bold;
+}
+
+.btn-primary {
+  background-color: #0b2c5e;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+section {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white
+  ;
+}
+
+.offer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.offer-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.offer-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.offer-card h3 {
+  background-color: #0b2c5e;
+  color: white;
+  padding: 10px 0;
+  font-size: 1.2rem;
+}
+
+.offer-card p {
+  padding: 15px;
+  font-size: 0.95rem;
+}
+
+.why-us {
+  text-align: center;
+}
+
+.why-us ul {
+  list-style: none;
+  margin-top: 20px;
+}
+
+.why-us li {
+  margin: 10px 0;
+  font-size: 1.05rem;
+}
+
+.why-us li::before {
+  content: "✔";
+  color: #0b2c5e;
+  margin-right: 10px;
+}
+
+.get-started {
+  background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-_z0qtvkBgciQ5yhLyNbrJvuN0q1eY3-6Aw&s); 
+  background-size: cover;
+  background-position: center;
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.get-started h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: blue;
+}
+
+.get-started p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  font-style: italic;
+    color: black;
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background: #0b2c5e;
+  color: white;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2rem;
+  }
+  header h2 {
+    font-size: 1.2rem;
+  }
+  .offer-card img {
+    height: 180px;
+  }
+  }
+  .btn-primary a {  
+  text-decoration: none;
+  color: white;
+}

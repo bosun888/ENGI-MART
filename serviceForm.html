@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ENGI-MART | Apply for Service</title>
+  <link rel="stylesheet" href="E.G.css"/>
+</head>
+<body>
+
+<header>
+  <h1>ENGI-MART</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="services.html">Services</a>
+    <a href="contacts.html">Contact</a>
+  </nav>
+</header>
+
+<section class="container">
+  <h2>Apply for Engineering Service</h2>
+  <p>Fill out the form below to request the service. A representative will contact you shortly.</p>
+
+  <form id="serviceForm">
+    <label for="service">Service:</label>
+    <input type="text" id="service" name="service" readonly />
+
+    <label for="name">Full Name:</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required />
+
+    <label for="phone">Phone Number:</label>
+    <input type="tel" id="phone" name="phone" required />
+
+    <label for="company">Company / Organization:</label>
+    <input type="text" id="company" name="company" />
+
+    <label for="message">Message / Details:</label>
+    <textarea id="message" name="message" rows="5" placeholder="Provide any additional details here..."></textarea>
+
+    <button type="submit">Submit Application</button>
+  </form>
+</section>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const serviceName = urlParams.get('service');
+  if(serviceName){
+    document.getElementById('service').value = decodeURIComponent(serviceName);
+  }
+
+  const form = document.getElementById('serviceForm');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const formData = {
+      service: document.getElementById('service').value,
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      company: document.getElementById('company').value,
+      message: document.getElementById('message').value
+    };
+
+    alert(`Thank you, ${formData.name}!\nYour request for "${formData.service}" has been submitted.\nWe will contact you soon.`);
+
+    form.reset();
+    if(serviceName){
+      document.getElementById('service').value = decodeURIComponent(serviceName);
+    }
+  });
+</script>
+
+</body>
+</html>

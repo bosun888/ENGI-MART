@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ENGI-MART | Cart</title>
+  <link rel="stylesheet" href="E.G.css"/>
+  <style>
+    /* Professional table styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+    }
+    th {
+      background: #0077cc;
+      color: #fff;
+    }
+    tr:nth-child(even) {
+      background: #f4f4f4;
+    }
+    input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      background: #28a745;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #218838;
+    }
+    .remove-btn {
+      background: #dc3545;
+    }
+    .remove-btn:hover {
+      background: #c82333;
+    }
+    #checkoutBtn {
+      background: #0077cc;
+      margin-top: 10px;
+    }
+    #checkoutBtn:hover {
+      background: #005fa3;
+    }
+    #cartEmpty {
+      text-align: center;
+      color: #777;
+      margin-top: 20px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>ENGI-MART</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="services.html">Services</a>
+    <a href="contacts.html">Contact</a>
+  </nav>
+</header>
+
+<section class="container">
+  <h2>Your Cart</h2>
+  <div id="cartContainer">
+    <table id="cartTable">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price (₦)</th>
+          <th>Quantity</th>
+          <th>Subtotal (₦)</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody id="cartItems"></tbody>
+    </table>
+    <p style="text-align:right; margin-top:10px;"><strong>Total: ₦<span id="total">0</span></strong></p>
+    <button id="checkoutBtn">Proceed to Checkout</button>
+    <p id="cartEmpty" style="display:none;">Your cart is empty</p>
+  </div>
+</section>
+
+<script>
+  // load cart from backend on page load
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+async function loadCartFromBackend() {
+  try {
+    const res = await fetch("http://localhost:5000/cart");
+    cart = await res.json();
+    displayCart();
+  } catch (err) {
+    console.error("Error loading cart:", err);
+    cart = JSON.parse(localStorage.getItem("cart")) || [];
+    displayCart();
+  }
+}
+
+// save cart to backend
+async function saveCartToBackend() {
+  try {
+    await fetch("http://localhost:5000/cart", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cart)
+    });
+  } catch(err){
+    console.error("Error saving cart:", err);
+  }
+}
+
+// override updateCart to save backend
+function updateCart() {
+  cartItemsEl.innerHTML = "";
+  let total = 0;
+
+  if(cart.length === 0){
+    cartTable.style.display = "none";
+    checkoutBtn.style.display = "none";
+    cartEmptyEl.style.display = "block";
+    totalEl.textContent = "0";
+    saveCartToBackend();
+    return;
+  } else {
+    cartTable.style.display = "table";
+    checkoutBtn.style.display = "inline-block";
+    cartEmptyEl.style.display = "none";
+  }
+
+  cart.forEach((item, index) => {
+    const quantity = item.quantity || 1;
+    const subtotal = item.price * quantity;
+    total += subtotal;
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${item.name}</td>
+      <td>${item.price.toLocaleString()}</td>
+      <td><input type="number" min="1" value="${quantity}" onchange="updateQuantity(${index}, this.value)" /></td>
+      <td>${subtotal.toLocaleString()}</td>
+      <td><button class="remove-btn" onclick="removeItem(${index})">Remove</button></td>
+    `;
+    cartItemsEl.appendChild(row);
+  });
+
+  totalEl.textContent = total.toLocaleString();
+  localStorage.setItem("cart", JSON.stringify(cart));
+  saveCartToBackend(); // save cart every time it updates
+}
+
+updateQuantity = (index, value) => {
+  cart[index].quantity = parseInt(value);
+  updateCart();
+}
+
+removeItem = (index) => {
+  cart.splice(index,1);
+  updateCart();
+}
+
+checkoutBtn.addEventListener("click", ()=>{
+  if(cart.length === 0) return alert("Your cart is empty!");
+  localStorage.setItem("cart", JSON.stringify(cart));
+  window.location.href = "checkout.html";
+})
+
+// load cart from backend initially
+loadCartFromBackend();
+
+</script>
+
+</body>
+</html>
