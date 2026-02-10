@@ -65,6 +65,44 @@
       margin-top: 20px;
       font-style: italic;
     }
+
+    #cartContainer table {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+@media screen and (max-width: 600px) {
+  table th, table td {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  #checkoutBtn {
+    width: 100%;
+    padding: 12px;
+  }
+
+  input[type="number"] {
+    width: 50px;
+    padding: 4px;
+  }
+}
+
+body.dark {
+  background: #121212;
+  color: #fff;
+}
+
+body.dark table {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+body.dark th {
+  background: #333;
+}
+
+
   </style>
 </head>
 <body>
@@ -72,11 +110,13 @@
 <header>
   <h1>ENGI-MART</h1>
   <nav>
-    <a href="index.html">Home</a>
+    <a href="home.html">Home</a>
     <a href="products.html">Products</a>
     <a href="services.html">Services</a>
     <a href="contacts.html">Contact</a>
   </nav>
+  <button id="darkModeToggle">🌙 Dark Mode</button>
+
 </header>
 
 <section class="container">
@@ -101,36 +141,42 @@
 </section>
 
 <script>
-  // load cart from backend on page load
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+let cart = [];
+const cartItemsEl = document.getElementById("cartItems");
+const totalEl = document.getElementById("total");
+const cartTable = document.getElementById("cartTable");
+const checkoutBtn = document.getElementById("checkoutBtn");
+const cartEmptyEl = document.getElementById("cartEmpty");
 
-async function loadCartFromBackend() {
-  try {
-    const res = await fetch("http://localhost:5000/cart");
-    cart = await res.json();
-    displayCart();
-  } catch (err) {
-    console.error("Error loading cart:", err);
+// --------------------
+// Load cart
+// --------------------
+async function loadCart() {
+  const token = localStorage.getItem("token");
+  if (!token) {
     cart = JSON.parse(localStorage.getItem("cart")) || [];
-    displayCart();
+    updateCartUI();
+    return;
   }
-}
 
-// save cart to backend
-async function saveCartToBackend() {
   try {
-    await fetch("http://localhost:5000/cart", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cart)
+    const res = await fetch("http://localhost:5000/cart", {
+      headers: { "Authorization": "Bearer " + token }
     });
-  } catch(err){
-    console.error("Error saving cart:", err);
+    const data = await res.json();
+    cart = data || [];
+    updateCartUI();
+  } catch(err) {
+    console.error(err);
+    cart = JSON.parse(localStorage.getItem("cart")) || [];
+    updateCartUI();
   }
 }
 
-// override updateCart to save backend
-function updateCart() {
+// --------------------
+// Update cart UI
+// --------------------
+function updateCartUI() {
   cartItemsEl.innerHTML = "";
   let total = 0;
 
@@ -139,7 +185,6 @@ function updateCart() {
     checkoutBtn.style.display = "none";
     cartEmptyEl.style.display = "block";
     totalEl.textContent = "0";
-    saveCartToBackend();
     return;
   } else {
     cartTable.style.display = "table";
@@ -155,39 +200,66 @@ function updateCart() {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${item.name}</td>
-      <td>${item.price.toLocaleString()}</td>
+      <td>₦${item.price.toLocaleString()}</td>
       <td><input type="number" min="1" value="${quantity}" onchange="updateQuantity(${index}, this.value)" /></td>
-      <td>${subtotal.toLocaleString()}</td>
+      <td>₦${subtotal.toLocaleString()}</td>
       <td><button class="remove-btn" onclick="removeItem(${index})">Remove</button></td>
     `;
     cartItemsEl.appendChild(row);
   });
 
   totalEl.textContent = total.toLocaleString();
+
+  // Save cart locally + backend
   localStorage.setItem("cart", JSON.stringify(cart));
-  saveCartToBackend(); // save cart every time it updates
+  saveCart();
 }
 
-updateQuantity = (index, value) => {
+function updateQuantity(index, value) {
   cart[index].quantity = parseInt(value);
-  updateCart();
+  updateCartUI();
 }
 
-removeItem = (index) => {
+function removeItem(index) {
   cart.splice(index,1);
-  updateCart();
+  updateCartUI();
 }
 
+// --------------------
+// Save cart to backend
+// --------------------
+async function saveCart() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  try {
+    await fetch("http://localhost:5000/cart", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify(cart)
+    });
+  } catch(err){
+    console.error("Error saving cart:", err);
+  }
+}
+
+// --------------------
+// Checkout
+// --------------------
 checkoutBtn.addEventListener("click", ()=>{
-  if(cart.length === 0) return alert("Your cart is empty!");
-  localStorage.setItem("cart", JSON.stringify(cart));
+  if(cart.length === 0) return alert("Cart is empty!");
+  sessionStorage.setItem("currentCart", JSON.stringify(cart));
   window.location.href = "checkout.html";
-})
+});
 
-// load cart from backend initially
-loadCartFromBackend();
-
+// --------------------
+// Initial load
+// --------------------
+loadCart();
 </script>
+
 
 </body>
 </html>

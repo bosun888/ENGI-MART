@@ -1,27 +1,46 @@
+/* =========================
+   GLOBAL CART
+========================= */
 let cart = [];
 
-// Get logged-in user
 
-const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
-fetch(`http://localhost:5000/cart/${currentUser.id}`)
+/* =========================
+   CURRENT USER (safe)
+========================= */
+const currentUser =
+  JSON.parse(sessionStorage.getItem("currentUser")) || null;
 
 
-// Load cart from backend on page load
+/* =========================
+   LOAD CART FROM BACKEND
+========================= */
 async function loadCart() {
-  if (!currentUser) return; // Not logged in
-  try {
-    const res = await fetch(`http://localhost:5000/cart/${currentUser.id}`);
-    cart = await res.json();
+  if (!currentUser) {
     updateCart();
-  } catch {
-    cart = [];
-    updateCart();
+    return;
   }
+
+  try {
+    const res = await fetch(
+      `http://localhost:5000/cart/${currentUser.id}`
+    );
+
+    cart = await res.json();
+  } catch (err) {
+    console.log("Cart load failed");
+    cart = [];
+  }
+
+  updateCart();
 }
 
-// Save cart to backend
+
+/* =========================
+   SAVE CART TO BACKEND
+========================= */
 async function saveCart() {
   if (!currentUser) return;
+
   await fetch(`http://localhost:5000/cart/${currentUser.id}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -29,21 +48,47 @@ async function saveCart() {
   });
 }
 
-// Add item to cart
+
+/* =========================
+   ADD TO CART
+========================= */
 function addToCart(name, price) {
   const existing = cart.find(item => item.name === name);
-  if (existing) existing.quantity += 1;
-  else cart.push({ name, price, quantity: 1 });
+
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({ name, price, quantity: 1 });
+  }
+
+  updateCart();
+  saveCart();
+  showToast("Added to cart ✓");
+}
+
+
+/* =========================
+   REMOVE ITEM
+========================= */
+function removeItem(idx) {
+  cart.splice(idx, 1);
 
   updateCart();
   saveCart();
 }
 
-// Update cart UI
+
+/* =========================
+   UPDATE UI
+========================= */
 function updateCart() {
   const cartItemsEl = document.getElementById("cartItems");
   const totalEl = document.getElementById("total");
+
+  if (!cartItemsEl || !totalEl) return;
+
   cartItemsEl.innerHTML = "";
+
   let total = 0;
 
   cart.forEach((item, idx) => {
@@ -52,38 +97,80 @@ function updateCart() {
 
     const row = document.createElement("div");
     row.className = "cart-item";
+
     row.innerHTML = `
       <span>${item.name} x ${item.quantity}</span>
       <span>₦${subtotal.toLocaleString()}</span>
-      <button onclick="removeItem(${idx})">Remove</button>
+      <button onclick="removeItem(${idx})">✕</button>
     `;
+
     cartItemsEl.appendChild(row);
   });
 
   totalEl.textContent = total.toLocaleString();
 }
 
-// Remove item
-function removeItem(idx) {
-  cart.splice(idx, 1);
-  updateCart();
-  saveCart();
-}
 
-// Checkout
+/* =========================
+   CHECKOUT
+========================= */
 function checkout() {
   if (!currentUser) {
-    alert("Please log in to checkout!");
+    alert("Please log in first!");
     window.location.href = "login.html";
     return;
   }
+
   if (cart.length === 0) {
     alert("Your cart is empty!");
     return;
   }
+
   localStorage.setItem("cart", JSON.stringify(cart));
   window.location.href = "checkout.html";
 }
 
-// Load cart when page loads
-window.onload = loadCart;
+
+/* =========================
+   TOAST NOTIFICATION
+========================= */
+function showToast(msg) {
+  let toast = document.querySelector(".notification");
+
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "notification";
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = msg;
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 1500);
+}
+
+
+/* =========================
+   HAMBURGER MENU
+========================= */
+function setupMenu() {
+  const toggle = document.getElementById("menuToggle");
+  const nav = document.getElementById("navMenu");
+
+  if (!toggle || !nav) return;
+
+  toggle.addEventListener("click", () => {
+    nav.classList.toggle("show");
+  });
+}
+
+
+/* =========================
+   INIT WHEN PAGE LOADS
+========================= */
+window.addEventListener("DOMContentLoaded", () => {
+  setupMenu();
+  loadCart();
+});

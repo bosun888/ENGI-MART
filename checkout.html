@@ -50,75 +50,81 @@
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
-  const STRIPE_PUBLISHABLE_KEY = "YOUR_STRIPE_PUBLISHABLE_KEY"; // replace with your key
-  const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+const STRIPE_PUBLISHABLE_KEY = "YOUR_STRIPE_PUBLISHABLE_KEY"; // replace
+const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
 
-  let cart = [];
+const checkoutItemsEl = document.getElementById("checkoutItems");
+const totalAmountEl = document.getElementById("totalAmount");
+const payBtn = document.getElementById("payBtn");
 
-  // Load cart from backend
-  async function loadCart() {
-    try {
-      const res = await fetch("http://localhost:5000/cart");
-      cart = await res.json();
-      displayCart();
-    } catch (err) {
-      console.error("Error loading cart:", err);
-      alert("Failed to load cart.");
-    }
+let cart = JSON.parse(sessionStorage.getItem("currentCart")) || [];
+const token = localStorage.getItem("token");
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+// Fill email if user is logged in
+if(currentUser) document.getElementById("email").value = currentUser.email;
+
+// --------------------
+// Display cart
+// --------------------
+function displayCart() {
+  checkoutItemsEl.innerHTML = "";
+  let total = 0;
+
+  if(cart.length === 0) {
+    checkoutItemsEl.innerHTML = `<tr><td colspan="4">Your cart is empty</td></tr>`;
+    totalAmountEl.textContent = "0";
+    return;
   }
 
-  function displayCart() {
-    const tbody = document.getElementById("checkoutItems");
-    const totalEl = document.getElementById("totalAmount");
-    tbody.innerHTML = "";
+  cart.forEach(item => {
+    const quantity = item.quantity || 1;
+    const subtotal = item.price * quantity;
+    total += subtotal;
 
-    if(cart.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4">Your cart is empty</td></tr>`;
-      totalEl.textContent = "0";
-      return;
-    }
-
-    let total = 0;
-    cart.forEach(item => {
-      const quantity = item.quantity || 1;
-      const subtotal = item.price * quantity;
-      total += subtotal;
-
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${item.name}</td>
-        <td>${item.price.toLocaleString()}</td>
-        <td>${quantity}</td>
-        <td>${subtotal.toLocaleString()}</td>
-      `;
-      tbody.appendChild(row);
-    });
-
-    totalEl.textContent = total.toLocaleString();
-  }
-
-  // Checkout button
-  document.getElementById("payBtn").addEventListener("click", async () => {
-    const email = document.getElementById("email").value;
-    if(!email) return alert("Please enter your email");
-
-    if(cart.length === 0) return alert("Your cart is empty!");
-
-    try {
-      const res = await fetch("http://localhost:5000/create-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart, customerEmail: email })
-      });
-      const data = await res.json();
-      await stripe.redirectToCheckout({ sessionId: data.id });
-    } catch(err) {
-      console.error("Error creating checkout session:", err);
-      alert("Failed to initiate payment");
-    }
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${item.name}</td>
+      <td>₦${item.price.toLocaleString()}</td>
+      <td>${quantity}</td>
+      <td>₦${subtotal.toLocaleString()}</td>
+    `;
+    checkoutItemsEl.appendChild(row);
   });
 
-  loadCart();
+  totalAmountEl.textContent = total.toLocaleString();
+}
+
+displayCart();
+
+// --------------------
+// Pay button
+// --------------------
+payBtn.addEventListener("click", async () => {
+  const email = document.getElementById("email").value;
+  if(!email) return alert("Please enter your email");
+  if(cart.length === 0) return alert("Your cart is empty!");
+
+  try {
+    const res = await fetch("http://localhost:5000/create-checkout-session", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ cart, customerEmail: email })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Checkout failed");
+
+    await stripe.redirectToCheckout({ sessionId: data.id });
+
+  } catch(err) {
+    console.error(err);
+    alert("Error initiating payment. Check console.");
+  }
+});
 </script>
 
 </body>
