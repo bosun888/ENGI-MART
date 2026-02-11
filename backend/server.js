@@ -23,6 +23,14 @@ const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 const STRIPE_WEBHOOK_SECRET = "YOUR_STRIPE_WEBHOOK_SECRET"; // get from Stripe dashboard
 
 // =========================
+// Test route
+// =========================
+app.get("/", (req, res) => {
+  res.send("Backend is working 🚀");
+});
+
+
+// =========================
 // Ensure data folder/files exist
 // =========================
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
