@@ -1,14 +1,10 @@
 [
   {
-    "email": "kane@gmail.com",
-    "password": "bosun1122"
-  },
-  {
-    "email": "kane@gmail.com",
-    "password": "bosun1122"
-  },
-  {
-    "email": "kane@gmail.com",
-    "password": "bosun1122"
+    "id": "oizxl6at",
+    "name": "James",
+    "email": "jamesarthur1x@gmail.com",
+    "passwordHash": "$2b$10$WcQ5qQAybWFzbiF5fF168eXw22KlcL7WvmdM.jbs8PNUpHmTpYXVm",
+    "verified": true,
+    "verificationCode": "133974"
   }
 ]
