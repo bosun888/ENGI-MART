@@ -22,6 +22,6 @@ const timer = setInterval(() => {
 
   if (seconds === 0) {
     clearInterval(timer);
-    window.location.href = "index.html";
+    window.location.href = "home.html";
   }
 }, 1000);
