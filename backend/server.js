@@ -204,8 +204,8 @@ app.post("/create-checkout-session", authenticateToken, async (req, res) => {
       line_items,
       mode: 'payment',
       customer_email: customerEmail,
-      success_url: "http://localhost:5500/thankyou.html",
-      cancel_url: "http://localhost:5500/checkout.html",
+      success_url: "http://192.168.17.1:5500/thankyou.html",
+      cancel_url: "http://192.168.17.1:5500/checkout.html",
       metadata: {
         userId: req.user.id,
         cart: JSON.stringify(cart)
@@ -258,4 +258,6 @@ app.post("/webhook", express.raw({ type: "application/json" }), (req, res) => {
 // =========================
 // START SERVER
 // =========================
-app.listen(5000, () => console.log("✅ Backend running on http://localhost:5000"));
+app.listen(5000, "0.0.0.0", () =>
+  console.log("✅ Backend running on http://192.168.17.1:5000")
+);

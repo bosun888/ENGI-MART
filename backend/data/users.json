@@ -6,5 +6,13 @@
     "passwordHash": "$2b$10$kFhttR/Ilbrt.c.TrgEmAOyFCoIv1siGfJ6/wHKq2xbYnjNOEpan.",
     "verified": true,
     "verificationCode": null
+  },
+  {
+    "id": "u5sjepmw",
+    "name": "james ",
+    "email": "jamesarthur1x@gmail.com",
+    "passwordHash": "$2b$10$5/swtLhuIMXWR7tygSH3AupXTYUiO7T7qUZKbkHIaesRrmgyLydEa",
+    "verified": true,
+    "verificationCode": null
   }
 ]
