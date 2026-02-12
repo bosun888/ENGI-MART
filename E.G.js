@@ -22,7 +22,7 @@ async function loadCart() {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/cart/${currentUser.id}`
+      `http://192.168.17.1:5000/cart/${currentUser.id}`
     );
 
     cart = await res.json();
@@ -41,7 +41,7 @@ async function loadCart() {
 async function saveCart() {
   if (!currentUser) return;
 
-  await fetch(`http://localhost:5000/cart/${currentUser.id}`, {
+  await fetch(`http://192.168.17.1:5000/cart/${currentUser.id}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(cart)
