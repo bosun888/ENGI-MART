@@ -115,12 +115,6 @@ function updateCart() {
    CHECKOUT
 ========================= */
 function checkout() {
-  if (!currentUser) {
-    alert("Please log in first!");
-    window.location.href = "login.html";
-    return;
-  }
-
   if (cart.length === 0) {
     alert("Your cart is empty!");
     return;
