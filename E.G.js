@@ -115,14 +115,14 @@ function updateCart() {
    CHECKOUT
 ========================= */
 function checkout() {
-  if (!currentUser) {
+  if (currentUser) {
+    saveCart();
+  }
+
+   if (!currentUser) {
     alert("Please log in first!");
     window.location.href = "login.html";
     return;
-  }
-
-  if (currentUser) {
-    saveCart();
   }
 
   if (cart.length === 0) {
