@@ -121,6 +121,10 @@ function checkout() {
     return;
   }
 
+  if (currentUser) {
+    saveCart();
+  }
+
   if (cart.length === 0) {
     alert("Your cart is empty!");
     return;
